@@ -41,9 +41,69 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     [HideInInspector] public UnityEvent<Card> EndDragEvent;
     [HideInInspector] public UnityEvent<Card, bool> SelectEvent;
 
-    void Start()
+    public enum Type
+    {
+        Spade,
+        Heart,
+        Club,
+        Diamond,
+        Operator
+    }
+
+    public enum OperatorType {
+        Plus,
+        Minus,
+        Multiply,
+        Divide
+    };
+
+    public class CardInfo
+    {
+        public Type type;
+        public int rank;
+
+        public Sprite GetSprite()
+        {
+            return controller.spritesDict[this.AsKey()];
+        }
+
+        public (Type, int) AsKey() {
+            return (type, rank);
+        }
+
+        public CardInfo()
+        {
+        }
+
+        public CardInfo(Type type, int rank)
+        {
+            this.type = type;
+            this.rank = rank;
+        }
+    }
+
+    public CardInfo cardInfo
+    {
+        set
+        {
+            this.card_info_ = value;
+            cardVisual.cardImage.sprite = value.GetSprite();
+        }
+        get
+        {
+            return this.card_info_;
+        }
+    }
+
+    private CardInfo card_info_;
+
+    static GameController controller;
+
+    void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
+        controller = GameObject.Find("Canvas").GetComponent<GameController>();
+
         imageComponent = GetComponent<Image>();
 
         if (!instantiateVisual)
@@ -52,6 +112,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         visualHandler = FindObjectOfType<VisualCardsHandler>();
         cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
         cardVisual.Initialize(this);
+
     }
 
     void Update()

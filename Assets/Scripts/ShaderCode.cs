@@ -23,11 +23,11 @@ public class ShaderCode : MonoBehaviour
         editions[2] = "REGULAR";
         editions[3] = "NEGATIVE";
 
-        for (int i = 0; i < image.material.enabledKeywords.Length; i++)
-        {
-            image.material.DisableKeyword(image.material.enabledKeywords[i]);
-        }
-        image.material.EnableKeyword("_EDITION_" + editions[Random.Range(0, editions.Length)]);
+        //for (int i = 0; i < image.material.enabledKeywords.Length; i++)
+        //{
+        //    image.material.DisableKeyword(image.material.enabledKeywords[i]);
+        //}
+        //image.material.EnableKeyword("_EDITION_" + editions[Random.Range(0, editions.Length)]);
     }
 
     // Update is called once per frame

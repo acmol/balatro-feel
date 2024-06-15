@@ -26,7 +26,7 @@ public class CardVisual : MonoBehaviour
     private Canvas shadowCanvas;
     [SerializeField] private Transform shakeParent;
     [SerializeField] private Transform tiltParent;
-    [SerializeField] private Image cardImage;
+    [SerializeField] public Image cardImage;
 
     [Header("Follow Parameters")]
     [SerializeField] private float followSpeed = 30;
@@ -87,8 +87,13 @@ public class CardVisual : MonoBehaviour
         parentCard.PointerUpEvent.AddListener(PointerUp);
         parentCard.SelectEvent.AddListener(Select);
 
+        var sprite = transform.Find("ShakeParent/TiltParent/Sprite");
+
+        cardImage = sprite.GetComponent<Image>();
+
         //Initialization
         initalize = true;
+
     }
 
     public void UpdateIndex(int length)
