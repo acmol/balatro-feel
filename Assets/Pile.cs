@@ -54,5 +54,9 @@ public class Pile : MonoBehaviour
     }
 
     List<Card.CardInfo> allCards;
-    [SerializeField] int pos = 0;
+    int pos = 0;
+
+    // After each turn, the cards from this pile in hand will refill to this amount.
+    [Header("Settings")]
+    [SerializeField] public int refill_amount = 8;
 }

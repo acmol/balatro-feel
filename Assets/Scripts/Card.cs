@@ -40,6 +40,9 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     [HideInInspector] public UnityEvent<Card> BeginDragEvent;
     [HideInInspector] public UnityEvent<Card> EndDragEvent;
     [HideInInspector] public UnityEvent<Card, bool> SelectEvent;
+    [HideInInspector] public UnityEvent<Card, bool> RightSelectEvent;
+
+    public GameObject pile;
 
     public enum Type
     {
@@ -47,7 +50,8 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         Heart,
         Club,
         Diamond,
-        Operator
+        Operator,
+        GOAL
     }
 
     public enum OperatorType {
@@ -110,7 +114,16 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             return;
 
         visualHandler = FindObjectOfType<VisualCardsHandler>();
-        cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
+        Vector3 pos;
+        if (pile)
+        {
+            pos = pile.transform.position;
+        } else
+        {
+            pos = new Vector3(0, 0, 0);
+        }
+        
+        cardVisual = Instantiate(cardVisualPrefab, pos, Quaternion.identity, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
         cardVisual.Initialize(this);
 
     }
@@ -184,17 +197,15 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        pointerDownTime = Time.time;
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
 
         PointerDownEvent.Invoke(this);
-        pointerDownTime = Time.time;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Left)
-            return;
 
         pointerUpTime = Time.time;
 
@@ -207,8 +218,15 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             return;
 
         selected = !selected;
-        SelectEvent.Invoke(this, selected);
-
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            SelectEvent.Invoke(this, selected);
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            print("XXXXXXXXXXXXXXXXXXXXX");
+            RightSelectEvent.Invoke(this, selected);
+        }
         if (selected)
             transform.localPosition += (cardVisual.transform.up * selectionOffset);
         else

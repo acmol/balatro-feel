@@ -22,6 +22,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c95421988888d4748b759958b04814cd
+    m_Address: Assets/Sprites/numbers.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 079d9792e44ee7b47a66bcdd85370ce8
+    m_Address: Assets/Sprites/operators.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: afeebf30bdefd9d488a78b9048e9d5c7, type: 2}
   m_SchemaSet:
