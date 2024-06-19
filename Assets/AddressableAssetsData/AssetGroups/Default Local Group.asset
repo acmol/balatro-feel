@@ -27,7 +27,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 079d9792e44ee7b47a66bcdd85370ce8
+  - m_GUID: da7f937441243f64a9b925995e771ba8
     m_Address: Assets/Sprites/operators.png
     m_ReadOnly: 0
     m_SerializedLabels: []

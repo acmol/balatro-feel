@@ -35,18 +35,28 @@ public class HorizontalCardHolder : MonoBehaviour
         card_prefab.pile = pile_object;
         var obj = Instantiate(slotPrefab, transform);
         var card = obj.GetComponentInChildren<Card>();
+        AddCard(card);
+        card.cardInfo = info;
+        return card;
+
+    }
+
+    void AddCard(Card card)
+    {
         card.PointerEnterEvent.AddListener(CardPointerEnter);
         card.PointerExitEvent.AddListener(CardPointerExit);
         card.BeginDragEvent.AddListener(BeginDrag);
         card.EndDragEvent.AddListener(EndDrag);
         card.SelectEvent.AddListener(OnSelect);
         card.RightSelectEvent.AddListener(OnRightSelect);
-
         card.name = cards.Count.ToString();
-        card.cardInfo = info;
         cards.Add(card);
-        return card;
-
+    }
+    void TransferInCard(GameObject slot)
+    {
+        Card card = slot.GetComponentInChildren<Card>();
+        slot.transform.SetParent(transform);
+        AddCard(card);
     }
 
     int GetLastSelect(Card current)
@@ -120,7 +130,7 @@ public class HorizontalCardHolder : MonoBehaviour
 
     public IEnumerable<Card> GetSelectedCards()
     {
-        return cards.Where((Card card) => card.selected);
+        return cards.Where((Card card) => card.selected).OrderBy((c)=>c.ParentIndex());
     }
 
     void Start()
@@ -157,13 +167,17 @@ public class HorizontalCardHolder : MonoBehaviour
         selectedCard = card;
     }
 
+    void CardGoHome(Card card)
+    {
+        card.transform.DOLocalMove(card.selected ? new Vector3(0, card.selectionOffset, 0) : Vector3.zero, tweenCardReturn ? .15f : 0).SetEase(Ease.OutBack);
+    }
 
     void EndDrag(Card card)
     {
         if (selectedCard == null)
             return;
 
-        selectedCard.transform.DOLocalMove(selectedCard.selected ? new Vector3(0,selectedCard.selectionOffset,0) : Vector3.zero, tweenCardReturn ? .15f : 0).SetEase(Ease.OutBack);
+        CardGoHome(selectedCard);
 
         rect.sizeDelta += Vector2.right;
         rect.sizeDelta -= Vector2.right;
@@ -185,6 +199,11 @@ public class HorizontalCardHolder : MonoBehaviour
     public void DestroyCard(Card card)
     {
         Destroy(card.transform.parent.gameObject);
+        TransferOutCard(card);
+    }
+
+    void TransferOutCard(Card card)
+    {
         cards.Remove(card);
         if (pile != null && pile.Count > 0)
         {
@@ -192,6 +211,14 @@ public class HorizontalCardHolder : MonoBehaviour
             cardPileIndex.Remove(card);
             cardsBySourcePile[index].Remove(card);
         }
+    }
+
+    public void TransferOutCard(Card card, HorizontalCardHolder target)
+    {
+        print("Transfer out");
+        TransferOutCard(card);
+        target.TransferInCard(card.transform.parent.gameObject);
+        target.CardGoHome(card);
     }
 
     void Update()
@@ -278,6 +305,14 @@ public class HorizontalCardHolder : MonoBehaviour
         card.cardVisual.Swap(swapIsRight ? -1 : 1);
 
         //Updated Visual Indexes
+        foreach (Card c in cards)
+        {
+            c.cardVisual.UpdateIndex(transform.childCount);
+        }
+    }
+
+    public void UpdateIndex()
+    {
         foreach (Card c in cards)
         {
             c.cardVisual.UpdateIndex(transform.childCount);

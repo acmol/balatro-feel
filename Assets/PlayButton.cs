@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class PlayButton : MonoBehaviour, IPointerDownHandler
 {
@@ -11,6 +12,9 @@ public class PlayButton : MonoBehaviour, IPointerDownHandler
     // Start is called before the first frame update
     Vector2 playingCardGroupPosition;
     RectTransform playingCardTransform;
+
+    GameObject showingGroup = null;
+
     void Start()
     {
         var group = GameObject.Find("GameButtonGroup");
@@ -18,6 +22,7 @@ public class PlayButton : MonoBehaviour, IPointerDownHandler
         playingCardGroup = GameObject.Find("PlayingCardGroup");
         playingCardTransform = playingCardGroup.GetComponent<RectTransform>();
         playingCardGroupPosition = playingCardTransform.anchoredPosition;
+        showingGroup = GameObject.Find("ShowingGroup");
     }
 
     // Update is called once per frame
@@ -62,7 +67,19 @@ public class PlayButton : MonoBehaviour, IPointerDownHandler
         {
             
             ToggleButtons();
+            var showing_holder = showingGroup.GetComponent<HorizontalCardHolder>();
+            var playing_holder = playingCardGroup.GetComponent<HorizontalCardHolder>();
+            var cards = playing_holder.GetSelectedCards();
+            var target_pos = showingGroup.transform.position;
+
+            foreach (var card in cards)
+            {
+                playing_holder.TransferOutCard(card, showing_holder);
+            }
+            showing_holder.UpdateIndex();
+
             yield return new WaitForSecondsRealtime(.1f);
+            playing_holder.DrawCards();
             ToggleButtons();
         }
     }
